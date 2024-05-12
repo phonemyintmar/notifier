@@ -36,4 +36,4 @@ jobs:
 
     - name: Run
       run: |
-        java -jar target/${project.artifactId}-${project.version}.jar
+        java -jar target/notifier-0.0.1-SNAPSHOT.jar
