@@ -73,11 +73,11 @@ public abstract class CommonTask implements Runnable {
                 String key = entry.getKey();
                 TradingData newData = entry.getValue();
                 if (!oldMap.containsKey(key)) {
-                    log.info("Send message, this is a new one");
+                    messageService.sendMessage(createMessage(newData, true));
                 } else {
                     TradingData oldData = oldMap.get(key);
                     if (checkValidity(newData, oldData, isPremarket)) {
-                        log.info("Send message, this one have diff in price");
+                        messageService.sendMessage(createMessage(newData, false));
                     }
                 }
             }
