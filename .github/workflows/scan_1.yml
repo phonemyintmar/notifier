@@ -1,15 +1,12 @@
-# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
-# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
-
-name: Maven Package
+# This job will run and scan and notify.
+name: scan
 
 on:
   schedule:
-    - cron: '0 11 * * *'
+    - cron: '0 7 * * *'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     env:
       CHAT_ID_AND_TEXT: ${{ secrets.CHAT_ID_AND_TEXT }}
@@ -17,6 +14,7 @@ jobs:
       SCREENER_ONE_URL: ${{ secrets.SCREENER_ONE_URL }}
       SCREENER_TWO_URL: ${{ secrets.SCREENER_TWO_URL }}
       SEND_MESSAGE_URL: ${{ secrets.SEND_MESSAGE_URL }}
+      MODE: PRE_MARKET
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
@@ -27,9 +25,7 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml  
-
-
-
+      
     - name: Run Tests
       run: mvn test
 
