@@ -16,4 +16,6 @@ public class AppConfig {
     private String sendMessageUrl;
 
     private String chatIdAndText;
+
+    private String mode;
 }
