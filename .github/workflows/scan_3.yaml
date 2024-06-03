@@ -1,12 +1,12 @@
 # This job will run and scan and notify.
 name: scan
 
-# on:
-#   schedule:
-#     - cron: '0 19 * * *'
 on:
-  push:
-    branches: [ "main" ]
+  schedule:
+    - cron: '0 19 * * *'
+# on:
+#   push:
+#     branches: [ "main" ]
 
 jobs:
   build:
