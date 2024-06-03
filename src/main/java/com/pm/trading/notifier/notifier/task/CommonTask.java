@@ -69,7 +69,7 @@ public abstract class CommonTask implements Runnable {
                 tradingData.setVolume((Integer) tradingDataRaw.get(4));
                 tradingData.setPreVolume((Integer) tradingDataRaw.get(3));
                 tradingData.setCurrentPrice(castDouble(tradingDataRaw.get(1)));
-                tradingData.setIncreasePercentage((Double) tradingDataRaw.get(2));
+                tradingData.setIncreasePercentage(castDouble(tradingDataRaw.get(2)));
                 newMap.put(tradingData.getTicker(), tradingData);
                 historyMap.put(tradingData.getTicker(), tradingData);
             }
