@@ -13,6 +13,7 @@ jobs:
       SCANNER_URL: ${{ secrets.SCANNER_URL }}
       SCREENER_ONE_URL: ${{ secrets.SCREENER_ONE_URL }}
       SCREENER_TWO_URL: ${{ secrets.SCREENER_TWO_URL }}
+      SCREENER_THREE_URL: ${{ secrets.SCREENER_THREE_URL }}
       SEND_MESSAGE_URL: ${{ secrets.SEND_MESSAGE_URL }}
       MODE: MARKET
     steps:
