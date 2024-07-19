@@ -23,9 +23,8 @@ public abstract class CommonTask implements Runnable {
     protected final ThreadPoolTaskScheduler taskScheduler;
     protected final SendMessageService messageService;
 
-    Map<String, TradingData> oldMap;
     Map<String, TradingData> newMap;
-    Map<String, TradingData> historyMap = new HashMap<>();
+    Map<String, TradingData> historyMap;
 
     @Value("${app.config.scannerUrl}")
     public String SCANNER_URL; //dr ka a mhan takl appConfig ko import pee use ll ya dl but
@@ -44,8 +43,8 @@ public abstract class CommonTask implements Runnable {
 
     public CommonTask(ConfigurableApplicationContext applicationContext, ThreadPoolTaskScheduler taskScheduler, SendMessageService messageService) {
         this.applicationContext = applicationContext;
-        oldMap = new HashMap<>();
         newMap = new HashMap<>();
+        historyMap = new HashMap<>();
         this.taskScheduler = taskScheduler;
         this.messageService = messageService;
     }
@@ -71,7 +70,6 @@ public abstract class CommonTask implements Runnable {
                 tradingData.setCurrentPrice(castDouble(tradingDataRaw.get(1)));
                 tradingData.setIncreasePercentage(castDouble(tradingDataRaw.get(2)));
                 newMap.put(tradingData.getTicker(), tradingData);
-                historyMap.put(tradingData.getTicker(), tradingData);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,38 +77,36 @@ public abstract class CommonTask implements Runnable {
             messageService.sendMessage(ERROR_API_MSG);
         }
 
-        if (!oldMap.isEmpty()) {
+        if (!historyMap.isEmpty()) {
             for (Map.Entry<String, TradingData> entry : newMap.entrySet()) {
                 String key = entry.getKey();
                 TradingData newData = entry.getValue();
-                if (!oldMap.containsKey(key) && isNoticeableChange(newData)) {
+                if (!historyMap.containsKey(key)) {
                     messageService.sendMessage(createMessage(newData, true));
-                } else {
-                    TradingData oldData = oldMap.get(key);
-                    if (checkValidity(newData, oldData, type)) {
-                        messageService.sendMessage(createMessage(newData, false));
-                    }
+                } else if (isNoticeableChange(newData)) {
+                    messageService.sendMessage(createMessage(newData, false));
                 }
             }
         }
-        oldMap = newMap;
+        historyMap.putAll(newMap);
         newMap = new HashMap<>();
     }
 
     private boolean isNoticeableChange(TradingData data) {
         if (!historyMap.containsKey(data.getTicker())) {
-            log.error("Something wrong, this should not happen");
+            log.error("Something went wrong, this should not happen");
             return false;
-        } else {
-            TradingData historyData = historyMap.get(data.getTicker());
-            if (data.getIncreasePercentage() - historyData.getIncreasePercentage() <= 3) {
-                log.info("A small change occured for {}", data.getTicker());
-                // this is just a small change and we don't care.
-                return false;
-            } else {
-                return true;
-            }
         }
+
+        TradingData historyData = historyMap.get(data.getTicker());
+        if (data.getIncreasePercentage() - historyData.getIncreasePercentage() >= 5) {
+            return true;
+        } else {
+            log.info("{} was in top 20 but no big change occurred.", data.getTicker());
+            // this is just a small change and we don't care.
+            return false;
+        }
+
     }
 
     // a mhan ka all value ko double cast ml so yin generic ka m lo wo just use Int.value of br nyr,
@@ -150,13 +146,15 @@ public abstract class CommonTask implements Runnable {
                             SCREENR_THREE_URL + "%s",
                     tradingData.getTicker(),
                     tradingData.getTicker(),
+                    tradingData.getTicker(),
                     tradingData.getTicker());
         } else {
-            return String.format("There is a new stock to look out. It just went up more than 10 percent. \n" +
+            return String.format("There is a new stock to look out. It just went up more than 5 percent. \n" +
                             "Name - %s \n" +
                             SCREENR_ONE_URL + "%s \n" +
                             SCREENR_TWO_URL + "%s \n" +
                             SCREENR_THREE_URL + "%s",
+                    tradingData.getTicker(),
                     tradingData.getTicker(),
                     tradingData.getTicker(),
                     tradingData.getTicker());

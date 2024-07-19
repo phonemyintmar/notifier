@@ -1,9 +1,9 @@
 # This job will run and scan and notify.
-name: scan
+name: scan premarket
 
 on:
-  # schedule:
-  #   - cron: '0 7 * * *'
+   schedule:
+     - cron: '0 7 * * *'
 
 jobs:
   build:

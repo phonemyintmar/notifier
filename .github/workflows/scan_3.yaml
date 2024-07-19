@@ -1,9 +1,9 @@
 # This job will run and scan and notify.
-name: scan
+name: scan aftermarket
 
 on:
-  # schedule:
-  #   - cron: '0 19 * * *'
+   schedule:
+     - cron: '0 19 * * *'
 # on:
 #   push:
 #     branches: [ "main" ]
