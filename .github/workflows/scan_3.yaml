@@ -3,7 +3,7 @@ name: scan aftermarket
 
 on:
    schedule:
-     - cron: '0 19 * * *'
+     - cron: '0 19 * * 1-5'
 # on:
 #   push:
 #     branches: [ "main" ]
